@@ -5220,6 +5220,9 @@ bool dhd_update_fw_nv_path(dhd_info_t *dhdinfo)
 #ifdef CONFIG_BCMDHD_NVRAM_PATH
 		nv = CONFIG_BCMDHD_NVRAM_PATH;
 #endif /* CONFIG_BCMDHD_NVRAM_PATH */
+#ifdef CONFIG_BCMDHD_CONFIG_PATH
+		conf = CONFIG_BCMDHD_CONFIG_PATH;
+#endif /* CONFIG_BCMDHD_CONFIG_PATH */
 //	}
 
 	/* check if we need to initialize the path */
@@ -5297,11 +5300,11 @@ bool dhd_update_fw_nv_path(dhd_info_t *dhdinfo)
 		return FALSE;
 	}
 	if (dhdinfo->conf_path[0] == '\0') {
-		dhd_conf_set_conf_path_by_nv_path(&dhdinfo->pub, dhdinfo->conf_path, dhdinfo->nv_path);
+		DHD_ERROR(("config path not found\n"));
+		return FALSE;
+	} else {
+		dhd_conf_set_conf_name_by_chip(&dhdinfo->pub, dhdinfo->conf_path);
 	}
-#ifdef CONFIG_PATH_AUTO_SELECT
-	dhd_conf_set_conf_name_by_chip(&dhdinfo->pub, dhdinfo->conf_path);
-#endif
 #endif /* BCMEMBEDIMAGE */
 
 	return TRUE;

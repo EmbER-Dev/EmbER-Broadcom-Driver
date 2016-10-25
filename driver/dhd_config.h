@@ -9,7 +9,6 @@
 #include <proto/802.11.h>
 
 #define FW_PATH_AUTO_SELECT 1
-//#define CONFIG_PATH_AUTO_SELECT
 extern char firmware_path[MOD_PARAM_PATHLEN];
 extern char nvram_path[MOD_PARAM_PATHLEN];
 extern int disable_proptx;
@@ -183,10 +182,7 @@ void dhd_conf_set_hw_oob_intr(bcmsdh_info_t *sdh, uint chip);
 #endif
 void dhd_conf_set_fw_name_by_chip(dhd_pub_t *dhd, char *fw_path);
 void dhd_conf_set_nv_name_by_chip(dhd_pub_t *dhd, char *nv_path);
-void dhd_conf_set_conf_path_by_nv_path(dhd_pub_t *dhd, char *conf_path, char *nv_path);
-#ifdef CONFIG_PATH_AUTO_SELECT
 void dhd_conf_set_conf_name_by_chip(dhd_pub_t *dhd, char *conf_path);
-#endif
 int dhd_conf_set_fw_int_cmd(dhd_pub_t *dhd, char *name, uint cmd, int val, int def, bool down);
 int dhd_conf_set_fw_string_cmd(dhd_pub_t *dhd, char *cmd, int val, int def, bool down);
 uint dhd_conf_get_band(dhd_pub_t *dhd);
