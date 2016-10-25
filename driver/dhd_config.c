@@ -541,33 +541,17 @@ dhd_conf_set_fw_name_by_chip(dhd_pub_t *dhd, char *fw_path)
 void
 dhd_conf_set_nv_name_by_chip(dhd_pub_t *dhd, char *nv_path)
 {
-	int matched=-1;
-	uint chip, chiprev;
+	static uint chip, chiprev, first=1;
 	int i;
 
-	chip = dhd->conf->chip;
-	chiprev = dhd->conf->chiprev;
-
-	for (i = 0;i < dhd->conf->nv_by_chip.count;i++) {
-		if (chip == dhd->conf->nv_by_chip.m_chip_nv_path_head[i].chip &&
-				chiprev==dhd->conf->nv_by_chip.m_chip_nv_path_head[i].chiprev) {
-			matched = i;
-			break;
-		}
+	if (first) {
+		chip = dhd_bus_chip_id(dhd);
+		chiprev = dhd_bus_chiprev_id(dhd);
+		first = 0;
 	}
-	if (matched < 0)
+	#ifndef FW_PATH_AUTO_SELECT
 		return;
-
-	if (nv_path[0] == '\0') {
-#ifdef CONFIG_BCMDHD_NVRAM_PATH
-		bcm_strncpy_s(nv_path, MOD_PARAM_PATHLEN-1, CONFIG_BCMDHD_NVRAM_PATH, MOD_PARAM_PATHLEN-1);
-		if (nv_path[0] == '\0')
-#endif
-		{
-			printf("nvram path is null\n");
-			return;
-		}
-	}
+	#endif
 
 	/* find out the last '/' */
 	i = strlen(nv_path);
@@ -576,7 +560,42 @@ dhd_conf_set_nv_name_by_chip(dhd_pub_t *dhd, char *nv_path)
 		i--;
 	}
 
-	strcpy(&nv_path[i+1], dhd->conf->nv_by_chip.m_chip_nv_path_head[matched].name);
+	switch (chip) {
+		case BCM4330_CHIP_ID:
+			strcpy(&nv_path[i+1], "nvram_ap6330.txt");
+			break;
+		case BCM43362_CHIP_ID:
+			if (chiprev == BCM43362A0_CHIP_REV)
+				strcpy(&nv_path[i+1], "nvram_ap6181.txt");
+			else
+				strcpy(&nv_path[i+1], "nvram_ap6210.txt");
+			break;
+		case BCM43430_CHIP_ID:
+			strcpy(&nv_path[i+1], "nvram_ap6212.txt");
+			break;
+		case BCM43340_CHIP_ID:
+		case BCM43341_CHIP_ID:
+			strcpy(&nv_path[i+1], "nvram_ap6234.txt");
+			break;
+		case BCM4324_CHIP_ID:
+			strcpy(&nv_path[i+1], "nvram_ap62x2.txt");
+			break;
+		case BCM4335_CHIP_ID:
+		case BCM4339_CHIP_ID:
+			strcpy(&nv_path[i+1], "nvram_ap6335.txt");
+			break;
+		case BCM4345_CHIP_ID:
+		case BCM43454_CHIP_ID:
+			strcpy(&nv_path[i+1], "nvram_ap6255.txt");
+			break;
+		case BCM4354_CHIP_ID:
+			strcpy(&nv_path[i+1], "nvram_ap6354.txt");
+			break;
+		case BCM4356_CHIP_ID:
+		case BCM4371_CHIP_ID:
+			strcpy(&nv_path[i+1], "nvram_ap6356.txt");
+			break;
+	}
 
 	printf("%s: nvram_path=%s\n", __FUNCTION__, nv_path);
 }
